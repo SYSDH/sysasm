@@ -16,7 +16,7 @@ void showError(Severity sev, char *extraMessage) {
     if (sev == FATAL_ERROR) {errorMessage = "fatal error: "; color = RED;}
     if (sev == WARNING_ERROR) {errorMessage = "warning: "; color = MAGENTA;}
 
-    printf("%s: %s%s%s %s\n", programName, color, errorMessage, RESET, extraMessage);
+    printf("%s: %s%s%s%s\n", programName, color, errorMessage, RESET, extraMessage);
 }
 
 void setProgram(char *programVar) {
