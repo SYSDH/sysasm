@@ -9,6 +9,7 @@
 // Commands
 #define MOV   "0x10"
 #define ADD   "0x20"
+#define SUB   "0x21"
 #define JZ    "0x30"
 #define JMP   "0x31"
 #define WRITE "0x40"
@@ -28,6 +29,11 @@ typedef struct {
     char *name;
     char *value;
 } keywordsStruct;
+
+typedef struct {
+    char name[256];
+    int address;
+} LabelSymbol;
 
 extern const keywordsStruct keywordTable[];
 extern const int tableSize;

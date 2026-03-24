@@ -12,7 +12,7 @@
 int main(int argc, char **argv) {
     setProgram(argv[0]);
 
-    Config cfg = {"output.hex"};
+    Config cfg = {"out.bin"};
     char *pos = NULL;
 
     if (parseArgs(argc, argv, &cfg, &pos)) return 1;
@@ -34,6 +34,28 @@ int main(int argc, char **argv) {
     }
     
     tokenize(code, &tokens);
+
+    for (int i = 0; i < tokens.size; i++) {
+        switch (tokens.data[i].type) {
+            case TOKEN_KEYWORD:
+                printf("KEYWORD: ");
+                break;
+
+            case TOKEN_NUMBER:
+                printf("NUMBER: ");
+                break;
+
+            case TOKEN_LABEL_DEF:
+                printf("LABEL_DEF: ");
+                break;
+
+             case TOKEN_LABEL_REF:
+                printf("LABEL_REF: ");
+                break;
+        }
+
+        printf("%s\n", tokens.data[i].value);
+    }
     
     return generate(tokens, cfg);
 }

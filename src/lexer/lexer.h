@@ -10,7 +10,8 @@ typedef enum {
     TOKEN_KEYWORD,
     TOKEN_NUMBER,
 
-    TOKEN_UNKNOWN,
+    TOKEN_LABEL_REF,
+    TOKEN_LABEL_DEF,
 } TokenType;
 
 typedef struct {

@@ -8,6 +8,7 @@ const char *KEYWORDS[] = {
     "exit",
     "mov",
     "add",
+    "sub",
     "jz",
     "jmp",
     "write",
@@ -48,11 +49,16 @@ void tokenize(const char *code, TokenArray *tokens) {
 
             word[wordIdx] = '\0';
 
-            if (contains(KEYWORDS, KEYWORDSCOUNT, word)) {
+            if (code[idx] == ':') {
+                addTok(tokens, TOKEN_LABEL_DEF, word);
+                idx++;
+            }
+
+            else if (contains(KEYWORDS, KEYWORDSCOUNT, word)) {
                 addTok(tokens, TOKEN_KEYWORD, word);
             }
             else {
-                addTok(tokens, TOKEN_UNKNOWN, word);
+                addTok(tokens, TOKEN_LABEL_REF, word);
             }
 
             continue;
