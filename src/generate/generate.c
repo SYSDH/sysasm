@@ -27,8 +27,8 @@ const keywordsStruct keywordTable[] = {
 }; 
 const int tableSize = sizeof(keywordTable) / sizeof(keywordTable[0]);
 
-int generate(TokenArray tokens) {
-    FILE *file = fopen("output.hex", "w");
+int generate(TokenArray tokens, Config cfg) {
+    FILE *file = fopen(cfg.outputName, "w");
     if (!file) {
         showError(FATAL_ERROR, "error to generate output hex file");
         return 1;

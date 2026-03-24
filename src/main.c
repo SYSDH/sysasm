@@ -6,12 +6,19 @@
 #include "preprocess/preprocess.h"
 #include "generate/generate.h"
 #include "getCode/getCode.h"
+#include "args/args.h"
 #include "helpers/helpers.h"
 
 int main(int argc, char **argv) {
     setProgram(argv[0]);
 
-    char *code = getCode(argv[1]);
+    Config cfg = {"output.hex"};
+    char *pos = NULL;
+
+    if (parseArgs(argc, argv, &cfg, &pos)) return 1;
+    if (!pos) { showError(FATAL_ERROR, "no input files"); return 1;}
+
+    char *code = getCode(pos);
 
     preprocess(code);
 
@@ -20,7 +27,7 @@ int main(int argc, char **argv) {
     tokens.size = 0;
     tokens.capacity = 10;
     tokens.data = malloc(tokens.capacity * sizeof(Token));
-    
+
     if (!tokens.data) { 
         showError(FATAL_ERROR, "error to allocate memory to tokens.data");
         return 1;
@@ -28,5 +35,5 @@ int main(int argc, char **argv) {
     
     tokenize(code, &tokens);
     
-    return generate(tokens);
+    return generate(tokens, cfg);
 }

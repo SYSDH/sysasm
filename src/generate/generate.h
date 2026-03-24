@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "../lexer/lexer.h"
+#include "../args/args.h"
 
 // Commands
 #define MOV   "0x10"
@@ -31,6 +32,6 @@ typedef struct {
 extern const keywordsStruct keywordTable[];
 extern const int tableSize;
 
-int generate(TokenArray tokens);
+int generate(TokenArray tokens, Config cfg);
 
 #endif
