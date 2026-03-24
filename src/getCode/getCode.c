@@ -9,8 +9,11 @@
 char* getCode(char *fileName) {
     FILE *f = fopen(fileName, "rb");
     if (!f) {
+        char buff[PATH_MAX];
 
-        printf("file: \"%s\" not found\n", fileName);
+        sprintf(buff, "file: \"%s\" not found", fileName);
+
+        showError(FATAL_ERROR,  buff);
         exit(1);
     }
 
@@ -20,7 +23,7 @@ char* getCode(char *fileName) {
 
     char *content = malloc(size + 1);
     if (!content) {
-        printf("Malloc error");
+        showError(FATAL_ERROR, "error do allocate memory");
         fclose(f);
         exit(1);
     }

@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "lexer.h"
-#include "../helpers/helpers.h"
 
 const char *KEYWORDS[] = {
     "exit",

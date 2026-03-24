@@ -6,7 +6,11 @@
 #include "preprocess/preprocess.h"
 #include "generate/generate.h"
 #include "getCode/getCode.h"
+#include "helpers/helpers.h"
+
 int main(int argc, char **argv) {
+    setProgram(argv[0]);
+
     char *code = getCode(argv[1]);
 
     preprocess(code);
@@ -16,9 +20,9 @@ int main(int argc, char **argv) {
     tokens.size = 0;
     tokens.capacity = 10;
     tokens.data = malloc(tokens.capacity * sizeof(Token));
-
+    
     if (!tokens.data) { 
-        printf("Error to allocate memory\n");
+        showError(FATAL_ERROR, "error to allocate memory to tokens.data");
         return 1;
     }
     

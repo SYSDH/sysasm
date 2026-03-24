@@ -12,7 +12,7 @@ void addTok(TokenArray *tokens, TokenType type, const char *value) {
                                tokens->capacity * sizeof(Token));
 
         if (!tokens->data) {
-            printf("Error to realloc\n");
+            showError(FATAL_ERROR, "error to realloc memory");
             exit(1);
         }
     }

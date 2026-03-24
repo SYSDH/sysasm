@@ -30,7 +30,7 @@ const int tableSize = sizeof(keywordTable) / sizeof(keywordTable[0]);
 int generate(TokenArray tokens) {
     FILE *file = fopen("output.hex", "w");
     if (!file) {
-        printf("Error to create file\n");
+        showError(FATAL_ERROR, "error to generate output hex file");
         return 1;
     }
 

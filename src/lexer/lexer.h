@@ -1,6 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include "../helpers/helpers.h"
+
 extern const char *KEYWORDS[];
 extern size_t KEYWORDSCOUNT;
 
