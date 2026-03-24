@@ -12,6 +12,7 @@ const keywordsStruct keywordTable[] = {
     {"add",   ADD},
     {"sub",   SUB},
     {"jz",    JZ},
+    {"jnz",    JNZ},
     {"jmp",   JMP},
     {"write", WRITE},
     {"exit",  EXIT},

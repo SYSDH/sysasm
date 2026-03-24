@@ -10,6 +10,7 @@ const char *KEYWORDS[] = {
     "add",
     "sub",
     "jz",
+    "jnz"
     "jmp",
     "write",
     "h",
