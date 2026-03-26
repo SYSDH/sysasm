@@ -11,6 +11,7 @@ const InstructionMap instructionTable[] = {
     {"add",   ADD,   ADD_REG},
     {"sub",   SUB,   SUB_REG},
     {"out",   OUT,   OUT_REG},
+    {"in",    IN,    0xFF},
     {"push",  PUSH,  PUSH_REG},
     {"load",  LOAD,  LOAD_REG},
     {"store", STORE, STORE_REG},
@@ -161,7 +162,7 @@ int generate(TokenArray tokens, Config cfg) {
                 }
 
                 if (found != -1) {
-                    int addr = (unsigned char)found;
+                    int addr = found;
                     fwrite(&addr, 4, 1, file);
                 } else {
                     char buff[512];

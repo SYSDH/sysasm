@@ -23,6 +23,7 @@ typedef enum {
     JMP         = 0x32, JMP_REG     = 0x33,
     // I/O
     OUT         = 0x40, OUT_REG     = 0x41,
+    IN          = 0x42,
     // Stack
     PUSH        = 0x50, PUSH_REG    = 0x51,
     POP         = 0x52,

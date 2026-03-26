@@ -13,6 +13,7 @@ const char *KEYWORDS[] = {
     "jnz",
     "jmp",
     "out",
+    "in",
     "load",
     "store",
     "push",
@@ -27,6 +28,7 @@ const char *KEYWORDS[] = {
     "n",
     "o"
 };
+
 size_t KEYWORDSCOUNT = sizeof(KEYWORDS) / sizeof(KEYWORDS[0]);
 
 void tokenize(const char *code, TokenArray *tokens) {
