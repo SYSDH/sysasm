@@ -34,6 +34,11 @@ int main(int argc, char **argv) {
     }
     
     tokenize(code, &tokens);
+
+    int ret = generate(tokens, cfg);
+
+    free(code);
+    free(tokens.data);
     
-    return generate(tokens, cfg);
+    return ret;
 }

@@ -1,6 +1,6 @@
 #ifndef PREPROCESS_H
 #define PREPROCESS_H
 
-char *preprocess(char code[]);
+void preprocess(char code[]);
 
 #endif

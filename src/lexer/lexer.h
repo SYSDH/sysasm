@@ -12,11 +12,16 @@ typedef enum {
 
     TOKEN_LABEL_REF,
     TOKEN_LABEL_DEF,
+
+    TOKEN_POINTER,
 } TokenType;
 
 typedef struct {
     TokenType type;
     char value[256];
+
+    int ln;
+    int col;
 } Token;
 
 typedef struct {

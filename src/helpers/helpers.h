@@ -12,8 +12,6 @@ extern char *programName;
 
 int contains(const char *arr[], size_t n, const char *value);
 
-char *findValue(const char *str);
-
 void showError(Severity sev, char *extraMessage);
 void setProgram(char *programVar);
 

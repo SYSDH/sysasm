@@ -6,38 +6,53 @@
 #include "../lexer/lexer.h"
 #include "../args/args.h"
 
-// Commands
-#define MOV   "0x10"
-#define ADD   "0x20"
-#define SUB   "0x21"
-#define JZ    "0x30"
-#define JNZ   "0x31"
-#define JMP   "0x32"
-#define WRITE "0x40"
-#define EXIT  "0xFF"
+#define MAX_LABEL 100
 
-// Registers
-#define H  "0x0"
-#define He "0x1"
-#define Li "0x2"
-#define Be "0x3"
-#define B  "0x4"
-#define C  "0x5"
-#define N  "0x6"
-#define O  "0x7"
+typedef enum {
+    // System
+    EXIT        = 0xFF,
+
+    // Data
+    MOV         = 0x10, MOV_REG     = 0x11,
+    // Math
+    ADD         = 0x20, ADD_REG     = 0x21,
+    SUB         = 0x22, SUB_REG     = 0x23,
+    // Flow
+    JZ          = 0x30,
+    JNZ         = 0x31,
+    JMP         = 0x32, JMP_REG     = 0x33,
+    // I/O
+    OUT         = 0x40, OUT_REG     = 0x41,
+    // Stack
+    PUSH        = 0x50, PUSH_REG    = 0x51,
+    POP         = 0x52,
+    // Ram
+    LOAD        = 0x60, LOAD_REG    = 0x61,
+    STORE       = 0x62, STORE_REG   = 0x63,
+
+} Opcode;
+
+
+// Maps
+typedef struct {
+    char *name;
+    unsigned char opNormal;
+    unsigned char opReg;
+} InstructionMap;
 
 typedef struct {
     char *name;
-    char *value;
-} keywordsStruct;
+    int value;
+} RegisterMap;
+
+extern const InstructionMap instructionTable[];
+extern const RegisterMap registerTable[];
+
 
 typedef struct {
     char name[256];
     int address;
 } LabelSymbol;
-
-extern const keywordsStruct keywordTable[];
-extern const int tableSize;
 
 int generate(TokenArray tokens, Config cfg);
 

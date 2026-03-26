@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-char *preprocess(char code[]) {
+void preprocess(char code[]) {
     
     int ptr = 0;
 
