@@ -5,7 +5,7 @@
 #include "../args.h"
 
 void handleVersion(const char *val, void *context) {
-    const char *name = "SYSDH Software Suite\nHasm: ";
+    const char *name = "SYSDH Software Suite\nsysasm: ";
     const char *version = "0.4.6-beta";
 
 
