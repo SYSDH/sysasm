@@ -7,6 +7,7 @@
 ArgOption options[] = {
     {"v", "version", "Show the version of project", 1, handleVersion},
     {"o", "output", "Set output name", 1, handleOutput},
+    {NULL, "search-entry", "Search entry point from code", 0, handleEntryPoint},
     {"h", "help", "Show this message", 0, handleHelp}
 };
 

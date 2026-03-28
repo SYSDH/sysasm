@@ -12,7 +12,7 @@
 int main(int argc, char **argv) {
     setProgram(argv[0]);
 
-    Config cfg = {"out.bin"};
+    Config cfg = {"out.bin", 1};
     char *pos = NULL;
 
     if (parseArgs(argc, argv, &cfg, &pos)) return 1;

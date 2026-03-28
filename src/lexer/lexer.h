@@ -14,6 +14,7 @@ typedef enum {
     TOKEN_LABEL_DEF,
 
     TOKEN_POINTER,
+    TOKEN_DIRECTIVE,
 } TokenType;
 
 typedef struct {

@@ -12,6 +12,7 @@ typedef struct {
 
 typedef struct {
     char *outputName;
+    int searchEntryPoint;
 } Config;
 
 extern ArgOption options[];
@@ -22,5 +23,6 @@ int parseArgs(int argc, char **argv, void *context, char **targetPos);
 void handleVersion(const char *val, void *context);
 void handleOutput(const char *val, void *context);
 void handleHelp(const char *val, void *context);
+void handleEntryPoint(const char *val, void *context);
 
 #endif

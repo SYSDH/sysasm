@@ -52,8 +52,19 @@ int getOpNormalByName(const InstructionMap *array, int size, const char *searchN
 int generate(TokenArray tokens, Config cfg) {
     labelCount = 0;
     int currentAddress = 5;
+    char entryPointLabel[256] = "_main";
 
     for (int i = 0; i < tokens.size; i++) {
+        if (tokens.data[i].type == TOKEN_DIRECTIVE) {
+            if (strcmp(tokens.data[i].value, ".entry") == 0) {
+                if (i + 1 < tokens.size) {
+                    strncpy(entryPointLabel, tokens.data[i+1].value, 255);
+                    i++; 
+                }
+            }
+            continue;
+        }
+
         if (tokens.data[i].type == TOKEN_LABEL_DEF) {
             if (labelCount >= MAX_LABEL) {
                 char buff[512];
@@ -87,13 +98,13 @@ int generate(TokenArray tokens, Config cfg) {
     int mainLabel = -1;
     
     for (int j = 0; j < labelCount; j++) {
-        if (strcmp("_main", labelTable[j].name) == 0) {
+        if (strcmp(entryPointLabel, labelTable[j].name) == 0) {
             mainLabel = labelTable[j].address;
             break;
         }
     }
 
-    if (mainLabel == -1) {showError(FATAL_ERROR, "undefined reference to 'main' ou cannot find entry symbol _main"); return 1;};
+    if (mainLabel == -1 && cfg.searchEntryPoint) {showError(FATAL_ERROR, "undefined reference to 'main' ou cannot find entry symbol _main"); return 1;};
 
     FILE *file = fopen(cfg.outputName, "wb"); 
 
@@ -102,12 +113,20 @@ int generate(TokenArray tokens, Config cfg) {
         return 1;
     }
 
-    int jmp = JMP;
-    fwrite(&jmp, 1, 1, file);
-
-    fwrite(&mainLabel, 4, 1, file);
+    if (cfg.searchEntryPoint) {
+        int jmp = JMP;
+        fwrite(&jmp, 1, 1, file);
+        fwrite(&mainLabel, 4, 1, file);
+    }
 
     for (int i = 0; i < tokens.size; i++) {
+
+        if (tokens.data[i].type == TOKEN_DIRECTIVE) {
+            if (strcmp(tokens.data[i].value, ".entry") == 0) {
+                i++;
+            }
+            continue;
+        }
 
         switch (tokens.data[i].type) {
             case TOKEN_POINTER:

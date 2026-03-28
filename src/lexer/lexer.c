@@ -63,6 +63,23 @@ void tokenize(const char *code, TokenArray *tokens) {
             continue;
         }
 
+        if (code[idx] == '.') {
+            char dir[256];
+            int dIdx = 0;
+            int startCol = col;
+            
+            while (code[idx] != '\0' && !isspace(code[idx])) {
+                dir[dIdx++] = code[idx++];
+                col++;
+            }
+            dir[dIdx] = '\0';
+            
+            addTok(tokens, TOKEN_DIRECTIVE, dir);
+            tokens->data[tokens->size-1].ln = ln;
+            tokens->data[tokens->size-1].col = startCol;
+            continue;
+        }
+
         if (isalpha(code[idx]) || code[idx] == '_') {
             char word[256];
             int wordIdx = 0;
