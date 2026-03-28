@@ -107,7 +107,7 @@ int generate(TokenArray tokens, Config cfg) {
         }
     }
 
-    if (mainLabel == -1 && cfg.searchEntryPoint) {showError(FATAL_ERROR, "undefined reference to 'main' ou cannot find entry symbol _main"); return 1;};
+    if (mainLabel == -1 && cfg.searchEntryPoint) {showError(FATAL_ERROR, "undefined reference to '_main' ou cannot find entry symbol _main"); return 1;};
 
     logVerbose(cfg, "magenta", "GENERATE", "Entry point set to _main at 0x%04X", mainLabel);
 
