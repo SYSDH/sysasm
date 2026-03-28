@@ -63,12 +63,12 @@ void tokenize(const char *code, TokenArray *tokens) {
             continue;
         }
 
-        if (isalpha(code[idx])) {
+        if (isalpha(code[idx]) || code[idx] == '_') {
             char word[256];
             int wordIdx = 0;
             int startCol = col;
 
-            while (isalnum(code[idx])) {
+            while (isalnum(code[idx]) || code[idx] == '_') {
                 word[wordIdx++] = code[idx++];
                 col++;
             }

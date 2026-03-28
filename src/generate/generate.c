@@ -51,7 +51,7 @@ int getOpNormalByName(const InstructionMap *array, int size, const char *searchN
 
 int generate(TokenArray tokens, Config cfg) {
     labelCount = 0;
-    int currentAddress = 0;
+    int currentAddress = 5;
 
     for (int i = 0; i < tokens.size; i++) {
         if (tokens.data[i].type == TOKEN_LABEL_DEF) {
@@ -84,6 +84,16 @@ int generate(TokenArray tokens, Config cfg) {
     }
 
     int totalBinarySize = currentAddress;
+    int mainLabel = -1;
+    
+    for (int j = 0; j < labelCount; j++) {
+        if (strcmp("_main", labelTable[j].name) == 0) {
+            mainLabel = labelTable[j].address;
+            break;
+        }
+    }
+
+    if (mainLabel == -1) {showError(FATAL_ERROR, "undefined reference to 'main' ou cannot find entry symbol _main"); return 1;};
 
     FILE *file = fopen(cfg.outputName, "wb"); 
 
@@ -91,6 +101,11 @@ int generate(TokenArray tokens, Config cfg) {
         showError(FATAL_ERROR, "error to generate binary file");
         return 1;
     }
+
+    int jmp = JMP;
+    fwrite(&jmp, 1, 1, file);
+
+    fwrite(&mainLabel, 4, 1, file);
 
     for (int i = 0; i < tokens.size; i++) {
 

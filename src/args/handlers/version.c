@@ -6,7 +6,7 @@
 
 void handleVersion(const char *val, void *context) {
     const char *name = "SYSDH Software Suite\nHasm: ";
-    const char *version = "0.2.2-beta";
+    const char *version = "0.4.6-beta";
 
 
     printf("%s%s\n", name, version);

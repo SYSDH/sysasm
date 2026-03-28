@@ -87,9 +87,10 @@ To assemble a file:
 Example of a memory-heavy operation (Brainfuck-style logic):
 
 ```asm
-; Set memory pointers
-mov c, 10000    ; Instruction pointer
-mov h, 20000    ; Data pointer
+_main:
+  ; Set memory pointers
+  mov c, 10000    ; Instruction pointer
+  mov h, 20000    ; Data pointer
 
 instructionsCall:
     load $c, he  ; Load instruction at address 'c' into 'he'
