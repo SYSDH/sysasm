@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/language-C-blue?cacheSeconds=300" alt="C">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Artxzzzz/sysasm?cacheSeconds=300" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/sysdh/sysasm?cacheSeconds=300" alt="License"></a>
   <img src="https://img.shields.io/github/stars/Artxzzzz/sysasm?cacheSeconds=300" alt="GitHub stars">
   <a href="https://github.com/Artxzzzz/sysasm/releases/latest">
     <img src="https://img.shields.io/github/v/release/Artxzzzz/sysasm?cacheSeconds=300" alt="Latest release">
