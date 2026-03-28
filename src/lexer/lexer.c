@@ -31,7 +31,7 @@ const char *KEYWORDS[] = {
 
 size_t KEYWORDSCOUNT = sizeof(KEYWORDS) / sizeof(KEYWORDS[0]);
 
-void tokenize(const char *code, TokenArray *tokens) {
+void tokenize(const char *code, TokenArray *tokens, Config cfg) {
     int idx = 0;
     int ln = 1;
     int col = 1;
@@ -51,6 +51,8 @@ void tokenize(const char *code, TokenArray *tokens) {
         }
         
         if (code[idx] == ';') {
+            logVerbose(cfg, "green", "LEXER", "Skipping comment line");
+
             while (code[idx] != '\n' && code[idx] != '\0')
                 idx++;
             continue;
@@ -77,6 +79,8 @@ void tokenize(const char *code, TokenArray *tokens) {
             addTok(tokens, TOKEN_DIRECTIVE, dir);
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
+            
+            logVerbose(cfg, "green", "LEXER", "Reading directive: '%s'", dir);
             continue;
         }
 
@@ -108,6 +112,8 @@ void tokenize(const char *code, TokenArray *tokens) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
 
+            logVerbose(cfg, "green", "LEXER", "Reading word: '%s'", word);
+
             continue;
         }
 
@@ -127,7 +133,7 @@ void tokenize(const char *code, TokenArray *tokens) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
 
-
+            logVerbose(cfg, "green", "LEXER", "Reading number: '%d'", number);
             continue;
         }
 

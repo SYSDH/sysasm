@@ -13,6 +13,7 @@ typedef struct {
 typedef struct {
     char *outputName;
     int searchEntryPoint;
+    int verbose;
 } Config;
 
 extern ArgOption options[];
@@ -24,5 +25,6 @@ void handleVersion(const char *val, void *context);
 void handleOutput(const char *val, void *context);
 void handleHelp(const char *val, void *context);
 void handleEntryPoint(const char *val, void *context);
+void handleVerbose(const char *val, void *context);
 
 #endif

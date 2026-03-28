@@ -83,6 +83,9 @@ int generate(TokenArray tokens, Config cfg) {
             strncpy(labelTable[labelCount].name, tokens.data[i].value, sizeof(labelTable[labelCount].name) - 1);
             labelTable[labelCount].name[sizeof(labelTable[labelCount].name) - 1] = '\0';
             labelTable[labelCount].address = currentAddress;
+
+             logVerbose(cfg, "magenta", "GENERATE", "Mapping label '%s' to address 0x%04X", 
+               labelTable[labelCount].name, currentAddress);
             labelCount++;
         } 
         else if (tokens.data[i].type == TOKEN_POINTER) continue;
@@ -106,6 +109,8 @@ int generate(TokenArray tokens, Config cfg) {
 
     if (mainLabel == -1 && cfg.searchEntryPoint) {showError(FATAL_ERROR, "undefined reference to 'main' ou cannot find entry symbol _main"); return 1;};
 
+    logVerbose(cfg, "magenta", "GENERATE", "Entry point set to _main at 0x%04X", mainLabel);
+
     FILE *file = fopen(cfg.outputName, "wb"); 
 
     if (!file) {
@@ -120,7 +125,6 @@ int generate(TokenArray tokens, Config cfg) {
     }
 
     for (int i = 0; i < tokens.size; i++) {
-
         if (tokens.data[i].type == TOKEN_DIRECTIVE) {
             if (strcmp(tokens.data[i].value, ".entry") == 0) {
                 i++;
@@ -137,6 +141,8 @@ int generate(TokenArray tokens, Config cfg) {
 
                 if (regidx != -1) {
                     unsigned char byte = (unsigned char)regidx;
+
+                    logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Register %s (0x%02X)", ftell(file), tokens.data[i].value, byte);
 
                     fwrite(&byte, 1, 1, file);
                     break;
@@ -181,6 +187,7 @@ int generate(TokenArray tokens, Config cfg) {
                     }
                 }
 
+                logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Immediate Value %d (Hex: 0x%08X)", ftell(file), val, val);
                 fwrite(&val, 4, 1, file);
                 break;
             }
@@ -197,6 +204,7 @@ int generate(TokenArray tokens, Config cfg) {
 
                 if (found != -1) {
                     int addr = found;
+                    logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Label Reference '%s' -> 0x%08X", ftell(file), tokens.data[i].value, found);
                     fwrite(&addr, 4, 1, file);
                 } else {
                     char buff[512];

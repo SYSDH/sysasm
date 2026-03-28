@@ -2,6 +2,7 @@
 #define LEXER_H
 
 #include "../helpers/helpers.h"
+#include "../args/args.h"
 
 extern const char *KEYWORDS[];
 extern size_t KEYWORDSCOUNT;
@@ -31,7 +32,7 @@ typedef struct {
     int capacity;
 } TokenArray;
 
-void tokenize(const char *code, TokenArray *tokens);
+void tokenize(const char *code, TokenArray *tokens, Config cfg);
 void addTok(TokenArray *tokens, TokenType type, const char *value);
 
 #endif

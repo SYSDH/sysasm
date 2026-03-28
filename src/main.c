@@ -12,15 +12,17 @@
 int main(int argc, char **argv) {
     setProgram(argv[0]);
 
-    Config cfg = {"out.bin", 1};
+    Config cfg = {"out.bin", 1, 0};
     char *pos = NULL;
 
     if (parseArgs(argc, argv, &cfg, &pos)) return 1;
     if (!pos) { showError(FATAL_ERROR, "no input files"); return 1;}
 
     char *code = getCode(pos);
+    logVerbose(cfg, "cyan", "FILE", "reading %s file", pos);
 
     preprocess(code);
+    logVerbose(cfg, "cyan", "FILE", "preprocessing %s file", pos);
 
     TokenArray tokens;
 
@@ -32,9 +34,12 @@ int main(int argc, char **argv) {
         showError(FATAL_ERROR, "error to allocate memory to tokens.data");
         return 1;
     }
-    
-    tokenize(code, &tokens);
 
+    tokenize(code, &tokens, cfg);
+    logVerbose(cfg, "green", "LEXER", "Start Tokenize step");
+
+    printf("\n");
+    logVerbose(cfg, "magenta", "GENERATE", "Start Generate code step");
     int ret = generate(tokens, cfg);
 
     free(code);
