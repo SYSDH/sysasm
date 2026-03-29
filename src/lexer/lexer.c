@@ -135,7 +135,8 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
 
-            logVerbose(cfg, "green", "LEXER", "Reading number: '%d'", number);
+            logVerbose(cfg, "green", "LEXER", "Reading number: '%s'", number);
+            
             continue;
         }
 

@@ -5,12 +5,12 @@
 #include "../helpers/helpers.h"
 
 ArgOption options[] = {
-    {"v", "version", "Show the version of project", 1, handleVersion},
-    {"o", "output", "Set output name", 1, handleOutput},
-    {"h", "help", "Show this message", 0, handleHelp},
+    {"v", "version", "Show the version of project", ARG_NONE, handleVersion},
+    {"o", "output", "Set output name", ARG_REQ, handleOutput},
+    {"h", "help", "Show this message", ARG_OPT, handleHelp},
 
-    {NULL, "search-entry", "Skip Search entry point from code", 0, handleEntryPoint},
-    {"V", "verbose", "Run code in verbose mode, sampling the compilation phase", 0, handleVerbose},
+    {NULL, "search-entry", "Skip Search entry point from code", ARG_NONE, handleEntryPoint},
+    {"V", "verbose", "Run code in verbose mode, sampling the compilation phase", ARG_NONE, handleVerbose},
 };
 
 const int optCount = sizeof(options) / sizeof(options[0]);
@@ -36,16 +36,21 @@ int parseArgs(int argc, char **argv, void *context, char **targetPos) {
             if (target != NULL && strcmp(current + (isLong ? 2 : 1), target) == 0) {
                 char *val = NULL;
 
-                if (options[j].hasVal) {
+                if (options[j].hasVal == ARG_REQ) {
 
                     if (i + 1 < argc) {
                         val = argv[++i];
                     } else {
                         char buff[256];
 
-                        sprintf(buff, "the option %s need a value.\n", current);
+                        sprintf(buff, "the option %s need a value.", current);
                         showError(FATAL_ERROR, buff);
                         return 1;
+                    }
+                }
+                else if (options[j].hasVal == ARG_OPT) {
+                    if (i + 1 < argc && argv[i + 1][0] != '-') {
+                        val = argv[++i];
                     }
                 }
 
@@ -58,7 +63,7 @@ int parseArgs(int argc, char **argv, void *context, char **targetPos) {
         if (!found) {
             char buff[1024];
 
-            sprintf(buff, "unrecognized command-line option '%s'\n", current);
+            sprintf(buff, "unrecognized command-line option '%s'", current);
             showError(FATAL_ERROR, buff);
             return 1;
         }

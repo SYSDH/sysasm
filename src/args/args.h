@@ -1,6 +1,10 @@
 #ifndef ARGS_H
 #define ARGS_H
 
+#define ARG_NONE 0
+#define ARG_REQ 1
+#define ARG_OPT 2
+
 typedef struct {
     const char *shortOpt;
     const char *longOpt;

@@ -22,7 +22,7 @@ Color colors[] = {
 };
 
 void setColor(const char *colorName) {
-    for (int i = 0; i < sizeof(colors)/sizeof(Color); i++) {
+    for (size_t i = 0; i < sizeof(colors)/sizeof(Color); i++) {
         if (strcmp(colorName, colors[i].name) == 0) {
             printf("\033[1m%s", colors[i].code);
             return;

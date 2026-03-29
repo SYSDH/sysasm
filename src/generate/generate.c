@@ -135,7 +135,7 @@ int generate(TokenArray tokens, Config cfg) {
         }
 
         switch (tokens.data[i].type) {
-            case TOKEN_POINTER:
+            case TOKEN_POINTER: case TOKEN_LABEL_DEF: case TOKEN_DIRECTIVE:
                 continue;
 
             case TOKEN_KEYWORD: {
@@ -152,7 +152,7 @@ int generate(TokenArray tokens, Config cfg) {
 
                 int instIdx = -1;
 
-                for (int j = 0; j < sizeof(instructionTable)/sizeof(instructionTable[0]); j++) {
+                for (size_t j = 0; j < sizeof(instructionTable)/sizeof(instructionTable[0]); j++) {
                     if (strcmp(tokens.data[i].value, instructionTable[j].name) == 0) {
                         instIdx = j; break;
                     }
