@@ -18,6 +18,8 @@ const InstructionMap instructionTable[] = {
     {"jmp",   JMP,   JMP_REG},
     {"jz",    JZ,    0xFF},
     {"jnz",   JNZ,   0xFF},
+    {"call",  CALL,   0xFF},
+    {"ret",   RET,  0xFF},
     {"pop",   POP,   0xFF},
     {"exit",  EXIT,  0xFF}
 };

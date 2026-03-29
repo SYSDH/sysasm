@@ -26,6 +26,7 @@ Built to replace the "peasant way" of hardcoding hexadecimal bytes, SYSASM featu
 *   **Pointer support ($):** Explicit syntax for memory operations using registers as pointers.
 *   **Smart Opcodes:** Automatically switches between Immediate and Register versions of instructions.
 *   **32-bit Architecture:** Handles 4-byte values and addresses natively.
+*   **Entry Point Control:** Use labels (`_main:`) or directives (`.entry`) to define where execution starts.
 
 <br>
 

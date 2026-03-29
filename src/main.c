@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     tokenize(code, &tokens, cfg);
     logVerbose(cfg, "green", "LEXER", "Start Tokenize step");
 
-    printf("\n");
+    if (cfg.verbose) printf("\n");
     logVerbose(cfg, "magenta", "GENERATE", "Start Generate code step");
     int ret = generate(tokens, cfg);
 

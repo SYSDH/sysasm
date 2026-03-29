@@ -9,7 +9,7 @@ ArgOption options[] = {
     {"o", "output", "Set output name", 1, handleOutput},
     {"h", "help", "Show this message", 0, handleHelp},
 
-    {NULL, "search-entry", "Search entry point from code", 0, handleEntryPoint},
+    {NULL, "search-entry", "Skip Search entry point from code", 0, handleEntryPoint},
     {"V", "verbose", "Run code in verbose mode, sampling the compilation phase", 0, handleVerbose},
 };
 

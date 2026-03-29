@@ -12,6 +12,8 @@ const char *KEYWORDS[] = {
     "jz",
     "jnz",
     "jmp",
+    "call",
+    "ret",
     "out",
     "in",
     "load",
