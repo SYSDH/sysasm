@@ -16,6 +16,7 @@ typedef enum {
 
     TOKEN_POINTER,
     TOKEN_DIRECTIVE,
+    TOKEN_STRING
 } TokenType;
 
 typedef struct {

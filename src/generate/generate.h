@@ -23,6 +23,9 @@ typedef enum {
     JMP         = 0x32, JMP_REG     = 0x33,
     CALL        = 0x34,
     RET         = 0x35,
+    JG          = 0x36, JGE         = 0x37,
+    JL          = 0x38, JLE         = 0x39,
+    
     // I/O
     OUT         = 0x40, OUT_REG     = 0x41,
     IN          = 0x42,

@@ -34,10 +34,8 @@ void handleHelp(const char *val, void *context) {
             printf("%s\n", options[found].desc);
             exit(0);
         }
-        char buff[256];
-        snprintf(buff, 256, "unknown command-line option '%s', showing general help:", val);
 
-        showError(WARNING_ERROR, buff);
+        showError(WARNING_ERROR, "unknown command-line option '%s', showing general help:", val);
     }
 
     printf("Usage: %s%s [options] <File>%s\n\n", BRIGHT, programName, RESET);

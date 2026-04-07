@@ -1,22 +1,36 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "../helpers.h"
 
 char *programName = "";
 
-void showError(Severity sev, char *extraMessage) {
+void showError(Severity sev, const char *extraMessage, ...) {
+    va_list msg;
+    va_start(msg, extraMessage); 
+
     #define MAGENTA "\x1b[35m"
     #define RED "\x1b[31m"
     #define RESET "\x1b[0m"
 
-    char *color = "";
-    char *errorMessage = "";
+    const char *color = "";
+    const char *errorMessage = "";
 
-    if (sev == FATAL_ERROR) {errorMessage = "fatal error: "; color = RED;}
-    if (sev == WARNING_ERROR) {errorMessage = "warning: "; color = MAGENTA;}
+    if (sev == FATAL_ERROR) {
+        errorMessage = "fatal error: ";
+        color = RED;
+    } else if (sev == WARNING_ERROR) {
+        errorMessage = "warning: ";
+        color = MAGENTA;
+    }
 
-    printf("%s: %s%s%s%s\n", programName, color, errorMessage, RESET, extraMessage);
+    printf("%s: %s%s%s", programName, color, errorMessage, RESET);
+    vprintf(extraMessage, msg);
+
+    printf("\n");
+
+    va_end(msg);
 }
 
 void setProgram(char *programVar) {

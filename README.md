@@ -96,6 +96,8 @@ _main:
 instructionsCall:
     load $c, he  ; Load instruction at address 'c' into 'he'
     add c, 4     ; Move pointer to next 32-bit instruction
+
+    jz he, end ; If char are terminator, exit the program
     
     ; Check for '+' (ASCII 43)
     sub he, 43

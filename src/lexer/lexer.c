@@ -11,6 +11,10 @@ const char *KEYWORDS[] = {
     "sub",
     "jz",
     "jnz",
+    "jg",
+    "jl",
+    "jle",
+    "jge",
     "jmp",
     "call",
     "ret",
@@ -20,6 +24,7 @@ const char *KEYWORDS[] = {
     "store",
     "push",
     "pop",
+    "db",
 
     "h",
     "he",
@@ -140,7 +145,56 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
             continue;
         }
 
+
+        if (code[idx] == '"') {
+            char str[256] = {0};
+            int stringIdx = 0;
+            int startCol = col;
+
+            idx++;
+            col++;
+
+            while (code[idx] != '"' && code[idx] != '\0') {
+                if (code[idx] == '\\') {
+                    idx++;
+                    col++;
+
+                    if (code[idx] == '\0') break;
+
+                    switch (code[idx]) {
+                        case 'n': str[stringIdx++] = '\n'; break;
+                        case 't': str[stringIdx++] = '\t'; break;
+                        case 'r': str[stringIdx++] = '\r'; break;
+                        case '0': str[stringIdx++] = '\0'; break;
+                        case '\\': str[stringIdx++] = '\\'; break;
+                        case '"': str[stringIdx++] = '"'; break;
+                        default:   
+                            str[stringIdx++] = code[idx]; 
+                            break;
+                    }
+
+                    idx++;
+                    col++;
+                }
+                else {
+                    str[stringIdx++] = code[idx++];
+                    col++;
+                }
+            }
+
+            if (code[idx] == '"') {idx++; col++;}
+
+            addTok(tokens, TOKEN_STRING, str);
+
+            tokens->data[tokens->size-1].ln = ln;
+            tokens->data[tokens->size-1].col = startCol;
+
+            logVerbose(cfg, "green", "LEXER", "Reading string: '%s'", str);
+            
+            continue;
+        }
+
         idx++;
-        ln++;
+        col++;
     }
 }

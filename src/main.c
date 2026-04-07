@@ -18,11 +18,9 @@ int main(int argc, char **argv) {
     if (parseArgs(argc, argv, &cfg, &pos)) return 1;
     if (!pos) { showError(FATAL_ERROR, "no input files"); return 1;}
 
-    char *code = getCode(pos);
     logVerbose(cfg, "cyan", "FILE", "reading %s file", pos);
 
-    preprocess(code);
-    logVerbose(cfg, "cyan", "FILE", "preprocessing %s file", pos);
+    char *code = preprocessFile(pos, cfg);
 
     TokenArray tokens;
 
@@ -40,6 +38,7 @@ int main(int argc, char **argv) {
 
     if (cfg.verbose) printf("\n");
     logVerbose(cfg, "magenta", "GENERATE", "Start Generate code step");
+    
     int ret = generate(tokens, cfg);
 
     free(code);

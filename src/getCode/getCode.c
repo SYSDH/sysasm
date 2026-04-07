@@ -9,11 +9,7 @@
 char* getCode(char *fileName) {
     FILE *f = fopen(fileName, "rb");
     if (!f) {
-        char buff[PATH_MAX];
-
-        sprintf(buff, "file: \"%s\" not found", fileName);
-
-        showError(FATAL_ERROR,  buff);
+        showError(FATAL_ERROR, "file: \"%s\" not found", fileName);
         exit(1);
     }
 

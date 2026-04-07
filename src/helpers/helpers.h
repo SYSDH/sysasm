@@ -13,7 +13,7 @@ extern char *programName;
 
 int contains(const char *arr[], size_t n, const char *value);
 
-void showError(Severity sev, char *extraMessage);
+void showError(Severity sev, const char *extraMessage, ...);
 void setProgram(char *programVar);
 void logVerbose(Config cfg, const char *color, const char *step, const char *fmt, ...);
 

@@ -1,6 +1,8 @@
 #ifndef PREPROCESS_H
 #define PREPROCESS_H
 
-void preprocess(char code[]);
+#include "../helpers/helpers.h"
+
+char* preprocessFile(const char *filename, Config cfg);
 
 #endif
