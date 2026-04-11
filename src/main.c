@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     if (parseArgs(argc, argv, &cfg, &pos)) return 1;
     if (!pos) { showError(FATAL_ERROR, "no input files"); return 1;}
 
-    logVerbose(cfg, "cyan", "FILE", "reading %s file", pos);
+    logVerbose(cfg, "cyan", "PREPROCESS", "Reading %s file", pos);
 
     char *code = preprocessFile(pos, cfg);
 
@@ -32,7 +32,8 @@ int main(int argc, char **argv) {
         showError(FATAL_ERROR, "error to allocate memory to tokens.data");
         return 1;
     }
-
+    
+    if (cfg.verbose) printf("\n");
     tokenize(code, &tokens, cfg);
     logVerbose(cfg, "green", "LEXER", "Start Tokenize step");
 

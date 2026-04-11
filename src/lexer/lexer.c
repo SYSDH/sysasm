@@ -24,6 +24,7 @@ const char *KEYWORDS[] = {
     "store",
     "push",
     "pop",
+    "loadf",
     "db",
 
     "h",
