@@ -246,6 +246,7 @@ int generate(TokenArray tokens, Config cfg) {
                 char *str = tokens.data[i].value;
                 logVerbose(cfg, "magenta", "GENERATE", "Writing string '%s' at 0x%04lX", str, ftell(file));
                 int len = strlen(str);
+                
                 for (int j = 0; j < len; j++) {
                     unsigned int byte = (unsigned char)str[j];
                     fwrite(&byte, 4, 1, file);

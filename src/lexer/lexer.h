@@ -21,7 +21,7 @@ typedef enum {
 
 typedef struct {
     TokenType type;
-    char value[256];
+    char value[2056];
 
     int ln;
     int col;

@@ -5,7 +5,6 @@
 #include "lexer/lexer.h"
 #include "preprocess/preprocess.h"
 #include "generate/generate.h"
-#include "getCode/getCode.h"
 #include "args/args.h"
 #include "helpers/helpers.h"
 
@@ -21,6 +20,12 @@ int main(int argc, char **argv) {
     logVerbose(cfg, "cyan", "PREPROCESS", "Reading %s file", pos);
 
     char *code = preprocessFile(pos, cfg);
+
+    if (!code) {
+        return 1;
+    }
+
+    // printf("%s\n", code);
 
     TokenArray tokens;
 

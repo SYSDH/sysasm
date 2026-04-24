@@ -148,7 +148,7 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
 
 
         if (code[idx] == '"') {
-            char str[256] = {0};
+            char str[2056] = {0};
             int stringIdx = 0;
             int startCol = col;
 
