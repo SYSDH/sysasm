@@ -96,6 +96,8 @@ static char* applyMacro(const char *line, Config cfg) {
             }
             
             if (n > 0) {
+                for(int k = 0; nameBuf[k]; k++) nameBuf[k] = (char)tolower((unsigned char)nameBuf[k]);
+
                 int foundIdx = -1;
                 for (int i = 0; i < macroCount; i++) {
                     if (strcmp(macros[i].name, nameBuf) == 0) {

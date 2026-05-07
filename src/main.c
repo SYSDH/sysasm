@@ -9,6 +9,8 @@
 #include "helpers/helpers.h"
 
 int main(int argc, char **argv) {
+    fixUtf();
+    
     setProgram(argv[0]);
 
     Config cfg = {"out.bin", 1, 0};
@@ -25,7 +27,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    // printf("%s\n", code);
+    printf("á%s\n", code);
 
     TokenArray tokens;
 
