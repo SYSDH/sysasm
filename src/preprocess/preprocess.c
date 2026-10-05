@@ -68,6 +68,7 @@ static char* applyMacro(const char *line, Config cfg) {
     size_t destIdx = 0;
     size_t srcIdx = 0;
     int insideQuotes = 0;
+    int insideComment = 0;
     size_t lineLen = strlen(line);
 
     while (srcIdx < lineLen) {
@@ -85,7 +86,9 @@ static char* applyMacro(const char *line, Config cfg) {
             if (backslashes % 2 == 0) insideQuotes = !insideQuotes;
         }
 
-        if (line[srcIdx] == '%' && !insideQuotes) {
+        if (line[srcIdx] == ';' && !insideQuotes) insideComment = 1;
+
+        if (line[srcIdx] == '%' && !insideQuotes && !insideComment) {
             char nameBuf[MAX_MACRONAME] = {0};
             int n = 0;
             size_t tempIdx = srcIdx + 1;
@@ -121,7 +124,7 @@ static char* applyMacro(const char *line, Config cfg) {
                     }
                     
                     if (expectedArgs > 0) {
-                        while (argPtr < lineLen && isspace((unsigned char)line[argPtr])) {
+                        while (argPtr < lineLen && (isspace((unsigned char)line[argPtr]) || line[argPtr] == ',')) {
                             if (line[argPtr] == '\n' || line[argPtr] == '\r') break;
                             argPtr++;
                         }
@@ -130,7 +133,9 @@ static char* applyMacro(const char *line, Config cfg) {
                             if (line[argPtr] == '\n' || line[argPtr] == '\r' || line[argPtr] == ';') break;
 
                             int start = argPtr;
-                            while (argPtr < lineLen && !isspace((unsigned char)line[argPtr]) && line[argPtr] != ',' && line[argPtr] != ';') {
+                            while (argPtr < lineLen &&
+                                 !isspace((unsigned char)line[argPtr]) &&
+                                 line[argPtr] != ',' && line[argPtr] != ';') {
                                 argPtr++;
                             }
                             
@@ -331,6 +336,10 @@ static char* processRecursive(const char *filename, Config cfg) {
                         }
                     }
 
+                    for (int i = 0; start[i] != '\0'; i++) {
+                        start[i] = (char)tolower((unsigned char)start[i]);
+                    }
+
                     if (closeBrace) {
                         char *cb = strchr(start, '}');
                         if (cb) *cb = '\0';
@@ -349,6 +358,10 @@ static char* processRecursive(const char *filename, Config cfg) {
                 while (len > 0 && isspace((unsigned char)macroVal[len - 1])) {
                     macroVal[len - 1] = '\0';
                     len--;
+                }
+
+                for (int i = 0; macroVal[i] != '\0'; i++) {
+                    macroVal[i] = (char)tolower((unsigned char)macroVal[i]);
                 }
             }
 
