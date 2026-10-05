@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include <limits.h>
 
-#include "../args.h"
-#include "../../helpers/helpers.h"
+#include "args/args.h"
+#include "utils.h"
 
 void handleHelp(const char *val, void *context) {
     #define BRIGHT "\x1b[1m"

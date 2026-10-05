@@ -1,5 +1,4 @@
-#ifndef ARGS_H
-#define ARGS_H
+#pragma once
 
 #define ARG_NONE 0
 #define ARG_REQ 1
@@ -25,10 +24,7 @@ extern const int optCount;
 
 int parseArgs(int argc, char **argv, void *context, char **targetPos);
 
-void handleVersion(const char *val, void *context);
 void handleOutput(const char *val, void *context);
 void handleHelp(const char *val, void *context);
 void handleEntryPoint(const char *val, void *context);
 void handleVerbose(const char *val, void *context);
-
-#endif

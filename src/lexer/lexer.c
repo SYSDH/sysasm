@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "lexer.h"
+#include "lexer/lexer.h"
 
 const char *KEYWORDS[] = {
     "exit",

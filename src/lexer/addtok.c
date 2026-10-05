@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "lexer.h"
+#include "lexer/lexer.h"
 
 void addTok(TokenArray *tokens, TokenType type, const char *value) {
 

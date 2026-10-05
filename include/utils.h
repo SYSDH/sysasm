@@ -1,8 +1,7 @@
-#ifndef HELPERS_H
-#define HELPERS_H
+#pragma once
 
 #include <stddef.h>
-#include "../args/args.h"
+#include "args/args.h"
 
 typedef enum {
     WARNING_ERROR = 0,
@@ -17,5 +16,3 @@ void showError(Severity sev, const char *extraMessage, ...);
 void setProgram(char *programVar);
 void logVerbose(Config cfg, const char *color, const char *step, const char *fmt, ...);
 void fixUtf();
-
-#endif

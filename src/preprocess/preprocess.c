@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <limits.h>
 
-#include "preprocess.h"
+#include "preprocess/preprocess.h"
 
 #define MAX_INCLUDES 1024
 #define MAX_MACROS 1024

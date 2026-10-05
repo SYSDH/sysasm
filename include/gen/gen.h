@@ -1,5 +1,4 @@
-#ifndef GENERATE_H
-#define GENERATE_H
+#pragma once
 
 #include <stddef.h>
 
@@ -62,5 +61,3 @@ typedef struct {
 } LabelSymbol;
 
 int generate(TokenArray tokens, Config cfg);
-
-#endif

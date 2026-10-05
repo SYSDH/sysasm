@@ -1,4 +1,4 @@
-#include "../args.h"
+#include "args/args.h"
 
 void handleOutput(const char *val, void *context) {
     Config *cfg = (Config *)context;

@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "generate.h"
+#include "gen/gen.h"
 
-#include "../helpers/helpers.h"
+#include "utils.h"
 
 const InstructionMap instructionTable[] = {
     {"mov",   MOV,   MOV_REG},

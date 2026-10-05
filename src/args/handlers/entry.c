@@ -1,4 +1,4 @@
-#include "../args.h"
+#include "args/args.h"
 
 void handleEntryPoint(const char *val, void *context) {
     (void)val;

@@ -4,7 +4,7 @@
 #include <windows.h>
 #endif
 
-#include "../helpers.h"
+#include "utils.h"
 
 void fixUtf() {
     #ifdef _WIN32

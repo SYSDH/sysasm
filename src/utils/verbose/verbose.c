@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../../args/args.h"
+#include "args/args.h"
 
 typedef struct {
     const char *name;

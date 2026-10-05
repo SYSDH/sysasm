@@ -1,8 +1,7 @@
-#ifndef LEXER_H
-#define LEXER_H
+#pragma once
 
-#include "../helpers/helpers.h"
-#include "../args/args.h"
+#include "utils.h"
+#include "args/args.h"
 
 extern const char *KEYWORDS[];
 extern size_t KEYWORDSCOUNT;
@@ -35,5 +34,3 @@ typedef struct {
 
 void tokenize(const char *code, TokenArray *tokens, Config cfg);
 void addTok(TokenArray *tokens, TokenType type, const char *value);
-
-#endif

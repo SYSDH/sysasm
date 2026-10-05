@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "args.h"
-#include "../helpers/helpers.h"
+#include "args/args.h"
+#include "utils.h"
 
 ArgOption options[] = {
-    {"v", "version", "Show the version of project", ARG_NONE, handleVersion},
     {"o", "output", "Set output name", ARG_REQ, handleOutput},
     {"h", "help", "Show this message", ARG_OPT, handleHelp},
 

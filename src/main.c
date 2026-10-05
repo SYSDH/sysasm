@@ -4,9 +4,9 @@
 
 #include "lexer/lexer.h"
 #include "preprocess/preprocess.h"
-#include "generate/generate.h"
+#include "gen/gen.h"
 #include "args/args.h"
-#include "helpers/helpers.h"
+#include "utils.h"
 
 int main(int argc, char **argv) {
     fixUtf();
@@ -27,8 +27,6 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("á%s\n", code);
-
     TokenArray tokens;
 
     tokens.size = 0;
@@ -39,12 +37,10 @@ int main(int argc, char **argv) {
         showError(FATAL_ERROR, "error to allocate memory to tokens.data");
         return 1;
     }
-    
-    if (cfg.verbose) printf("\n");
-    tokenize(code, &tokens, cfg);
+ 
     logVerbose(cfg, "green", "LEXER", "Start Tokenize step");
+    tokenize(code, &tokens, cfg);
 
-    if (cfg.verbose) printf("\n");
     logVerbose(cfg, "magenta", "GENERATE", "Start Generate code step");
     
     int ret = generate(tokens, cfg);
