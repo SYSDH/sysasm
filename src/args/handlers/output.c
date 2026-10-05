@@ -1,6 +1,5 @@
 #include "args/args.h"
 
-void handleOutput(const char *val, void *context) {
-    Config *cfg = (Config *)context;
-    cfg->outputName = (char *)val;
+void handleOutput(const char *val, ArgCtx *ctx) {
+    ctx->outputName = (char *)val;
 }

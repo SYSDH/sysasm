@@ -1,8 +1,7 @@
 #include "args/args.h"
 
-void handleVerbose(const char *val, void *context) {
+void handleVerbose(const char *val, ArgCtx *ctx) {
     (void)val;
 
-    Config *cfg = (Config *)context;
-    cfg->verbose = 1;
+    ctx->verbose = 1;
 }

@@ -13,37 +13,38 @@ int main(int argc, char **argv) {
     
     setProgram(argv[0]);
 
-    Config cfg = {"out.bin", 1, 0};
-    char *pos = NULL;
+    ArgCtx ctx = {
+        .outputName       = "out.bin", 
+        .searchEntryPoint = 1, 
+        .verbose          = 0, 
+        .pos              = NULL,
+    };
 
-    if (parseArgs(argc, argv, &cfg, &pos)) return 1;
-    if (!pos) { showError(FATAL_ERROR, "no input files"); return 1;}
+    if (parseArgv(argc, argv, &ctx)) return 1;
+    if (!ctx.pos) { showError(FATAL_ERROR, "no input files"); return 1; }
 
-    logVerbose(cfg, "cyan", "PREPROCESS", "Reading %s file", pos);
+    logVerbose(ctx, "cyan", "PREPROCESS", "Reading %s file", ctx.pos);
 
-    char *code = preprocessFile(pos, cfg);
-
-    if (!code) {
-        return 1;
-    }
+    char *code = preprocessFile(ctx.pos, ctx);
+    if (!code) return 1;
 
     TokenArray tokens;
 
-    tokens.size = 0;
+    tokens.size     = 0;
     tokens.capacity = 10;
-    tokens.data = malloc(tokens.capacity * sizeof(Token));
+    tokens.data     = malloc(tokens.capacity * sizeof(Token));
 
     if (!tokens.data) { 
         showError(FATAL_ERROR, "error to allocate memory to tokens.data");
         return 1;
     }
  
-    logVerbose(cfg, "green", "LEXER", "Start Tokenize step");
-    tokenize(code, &tokens, cfg);
+    logVerbose(ctx, "green", "LEXER", "Start Tokenize step");
+    tokenize(code, &tokens, &ctx);
 
-    logVerbose(cfg, "magenta", "GENERATE", "Start Generate code step");
+    logVerbose(ctx, "magenta", "GENERATE", "Start Generate code step");
     
-    int ret = generate(tokens, cfg);
+    int ret = gen(&tokens, &ctx);
 
     free(code);
     free(tokens.data);

@@ -31,8 +31,9 @@ const InstructionMap instructionTable[] = {
 
 
 const RegisterMap registerTable[] = {
-    {"h", 0}, {"he", 1}, {"li", 2}, {"be", 3}, 
-    {"b", 4}, {"c", 5}, {"n", 6}, {"o", 7}
+    {"h",  0}, {"he", 1}, {"li", 2}, {"be", 3}, 
+    {"b",  4}, {"c",  5}, {"n",  6}, {"o",  7},
+    {"sp", 8}, {"bp", 9}
 };
 
 LabelSymbol labelTable[MAX_LABEL];
@@ -56,29 +57,29 @@ int getOpNormalByName(const InstructionMap *array, int size, const char *searchN
     return -1;
 }
 
-int generate(TokenArray tokens, Config cfg) {
+int gen(TokenArray *tokens, ArgCtx *ctx) {
     labelCount = 0;
 
-    int entryJmpSize = cfg.searchEntryPoint ? 5 : 0;
+    int entryJmpSize = ctx->searchEntryPoint ? 5 : 0;
     
     int currentAddress = entryJmpSize;
     
     char entryPointLabel[256] = "_main";
 
-    for (int i = 0; i < tokens.size; i++) {
-        if (tokens.data[i].type == TOKEN_DIRECTIVE) {
-            if (!strcmp(tokens.data[i].value, ".entry")) {
-                if (i + 1 < tokens.size) {
-                    strncpy(entryPointLabel, tokens.data[i+1].value, 255);
+    for (int i = 0; i < tokens->size; i++) {
+        if (tokens->data[i].type == TOKEN_DIRECTIVE) {
+            if (!strcmp(tokens->data[i].value, ".entry")) {
+                if (i + 1 < tokens->size) {
+                    strncpy(entryPointLabel, tokens->data[i+1].value, 255);
                     i++; 
                 } 
-            } else if (!strcmp(tokens.data[i].value, ".org")) {
-                if (i + 1 < tokens.size && tokens.data[i+1].type == TOKEN_NUMBER) {
-                    int newAddr = atoi(tokens.data[i+1].value);
+            } else if (!strcmp(tokens->data[i].value, ".org")) {
+                if (i + 1 < tokens->size && tokens->data[i+1].type == TOKEN_NUMBER) {
+                    int newAddr = atoi(tokens->data[i+1].value);
 
                     if (newAddr < currentAddress) {
                         showError(FATAL_ERROR, "%d.%d: .org directive cannot go backwards in memory (from %d to %d)", 
-                            tokens.data[i].ln, tokens.data[i].col, currentAddress, newAddr
+                            tokens->data[i].ln, tokens->data[i].col, currentAddress, newAddr
                         );
                         return 1;
                     }
@@ -87,14 +88,14 @@ int generate(TokenArray tokens, Config cfg) {
 
                     currentAddress += 4;
 
-                    if (cfg.searchEntryPoint) {
+                    if (ctx->searchEntryPoint) {
                         currentAddress +=5;
                     }
 
                     i++;
                 } else {
                     showError(FATAL_ERROR, "%d.%d: .org directive requires a number argument",
-                        tokens.data[i].ln, tokens.data[i].col
+                        tokens->data[i].ln, tokens->data[i].col
                     );
 
                     return 1;
@@ -104,35 +105,35 @@ int generate(TokenArray tokens, Config cfg) {
             continue;
         }
 
-        if (tokens.data[i].type == TOKEN_LABEL_DEF) {
+        if (tokens->data[i].type == TOKEN_LABEL_DEF) {
             if (labelCount >= MAX_LABEL) {
                 showError(FATAL_ERROR, "%d.%d: max label limit reached (%d)",
-                    tokens.data[i].ln, tokens.data[i].col,
+                    tokens->data[i].ln, tokens->data[i].col,
                     MAX_LABEL
                 );
 
                 return 1;
             }
 
-            strncpy(labelTable[labelCount].name, tokens.data[i].value, sizeof(labelTable[labelCount].name) - 1);
+            strncpy(labelTable[labelCount].name, tokens->data[i].value, sizeof(labelTable[labelCount].name) - 1);
             labelTable[labelCount].name[sizeof(labelTable[labelCount].name) - 1] = '\0';
             labelTable[labelCount].address = currentAddress;
 
-            logVerbose(cfg, "magenta", "GENERATE", "Mapping label '%s' to address 0x%04X", 
+            logVerbose(ctx, "magenta", "GENERATE", "Mapping label '%s' to address 0x%04X", 
             labelTable[labelCount].name, currentAddress);
             labelCount++;
 
             continue;
         }
-        else if (tokens.data[i].type == TOKEN_POINTER) continue;
-        else if (tokens.data[i].type == TOKEN_NUMBER || tokens.data[i].type == TOKEN_LABEL_REF) {
+        else if (tokens->data[i].type == TOKEN_POINTER) continue;
+        else if (tokens->data[i].type == TOKEN_NUMBER || tokens->data[i].type == TOKEN_LABEL_REF) {
             currentAddress += 4;
         }
-        else if (tokens.data[i].type == TOKEN_STRING) { 
-            int len = strlen(tokens.data[i].value) + 1;
+        else if (tokens->data[i].type == TOKEN_STRING) { 
+            int len = strlen(tokens->data[i].value) + 1;
             currentAddress += (len * 4); 
         }
-        else if (tokens.data[i].type == TOKEN_KEYWORD && !strcmp(tokens.data[i].value, "db")) {
+        else if (tokens->data[i].type == TOKEN_KEYWORD && !strcmp(tokens->data[i].value, "db")) {
             continue;
         }
         else {
@@ -150,11 +151,11 @@ int generate(TokenArray tokens, Config cfg) {
         }
     }
 
-    if (mainLabel == -1 && cfg.searchEntryPoint) {showError(FATAL_ERROR, "undefined reference to '_main' ou cannot find entry symbol _main"); return 1;};
+    if (mainLabel == -1 && ctx->searchEntryPoint) {showError(FATAL_ERROR, "undefined reference to '_main' ou cannot find entry symbol _main"); return 1;};
 
-    logVerbose(cfg, "magenta", "GENERATE", "Entry point set to _main at 0x%04X", mainLabel);
+    logVerbose(ctx, "magenta", "GENERATE", "Entry point set to _main at 0x%04X", mainLabel);
 
-    FILE *file = fopen(cfg.outputName, "wb"); 
+    FILE *file = fopen(ctx->outputName, "wb"); 
 
     if (!file) {
         showError(FATAL_ERROR, "error to generate binary file");
@@ -164,42 +165,42 @@ int generate(TokenArray tokens, Config cfg) {
     unsigned int header = 3301;
     fwrite(&header, 4, 1, file);
 
-    if (cfg.searchEntryPoint) {
+    if (ctx->searchEntryPoint) {
         int jmp = JMP;
         fwrite(&jmp, 1, 1, file);
         fwrite(&mainLabel, 4, 1, file);
     }
 
-    for (int i = 0; i < tokens.size; i++) {
-        if (tokens.data[i].type == TOKEN_DIRECTIVE) {
-            if (!strcmp(tokens.data[i].value, ".entry")) {
+    for (int i = 0; i < tokens->size; i++) {
+        if (tokens->data[i].type == TOKEN_DIRECTIVE) {
+            if (!strcmp(tokens->data[i].value, ".entry")) {
                 i++;
             }
-            else if (!strcmp(tokens.data[i].value, ".org")) {
+            else if (!strcmp(tokens->data[i].value, ".org")) {
                 i++;
             }
             continue;
         }
 
-        switch (tokens.data[i].type) {
+        switch (tokens->data[i].type) {
             case TOKEN_POINTER: case TOKEN_LABEL_DEF: case TOKEN_DIRECTIVE:
                 continue;
 
             case TOKEN_KEYWORD: {
-                int regidx = getRegIdx(tokens.data[i].value);
+                int regidx = getRegIdx(tokens->data[i].value);
 
                 if (regidx != -1) {
                     unsigned char byte = (unsigned char)regidx;
-                    logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Register %s (0x%02X)", ftell(file), tokens.data[i].value, byte);
+                    logVerbose(ctx, "magenta", "GENERATE", "0x%04lX: Register %s (0x%02X)", ftell(file), tokens->data[i].value, byte);
                     fwrite(&byte, 1, 1, file);
                     break;
                 }
 
-                if (strcmp(tokens.data[i].value, "db") == 0) continue; 
+                if (strcmp(tokens->data[i].value, "db") == 0) continue; 
 
                 int instIdx = -1;
                 for (size_t j = 0; j < sizeof(instructionTable)/sizeof(instructionTable[0]); j++) {
-                    if (strcmp(tokens.data[i].value, instructionTable[j].name) == 0) {
+                    if (strcmp(tokens->data[i].value, instructionTable[j].name) == 0) {
                         instIdx = j; break;
                     }
                 }
@@ -210,14 +211,14 @@ int generate(TokenArray tokens, Config cfg) {
                 
                 if (strcmp(inst.name, "mov") == 0 || strcmp(inst.name, "add") == 0 || strcmp(inst.name, "sub") == 0) {
                     int srcIdx = i + 2;
-                    if (srcIdx < tokens.size && tokens.data[srcIdx].type == TOKEN_POINTER) {
+                    if (srcIdx < tokens->size && tokens->data[srcIdx].type == TOKEN_POINTER) {
                         srcIdx++;
                     }
-                    if (srcIdx < tokens.size && getRegIdx(tokens.data[srcIdx].value) != -1) {
+                    if (srcIdx < tokens->size && getRegIdx(tokens->data[srcIdx].value) != -1) {
                         useRegVersion = 1;
                     }
                 } else {
-                    if (i + 1 < tokens.size && tokens.data[i+1].type == TOKEN_POINTER) {
+                    if (i + 1 < tokens->size && tokens->data[i+1].type == TOKEN_POINTER) {
                         if (inst.opReg != 0xFF) {
                             useRegVersion = 1;
                         }
@@ -225,26 +226,26 @@ int generate(TokenArray tokens, Config cfg) {
                 }
 
                 unsigned char opcode = useRegVersion ? inst.opReg : inst.opNormal;
-                logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Opcode %s (0x%02X)", ftell(file), inst.name, opcode);
+                logVerbose(ctx, "magenta", "GENERATE", "0x%04lX: Opcode %s (0x%02X)", ftell(file), inst.name, opcode);
                 fwrite(&opcode, 1, 1, file);
                 break;
             }
 
             case TOKEN_NUMBER: {
-                int val = atoi(tokens.data[i].value);
-                if (i > 0 && tokens.data[i-1].type == TOKEN_KEYWORD) {
-                    if (getOpNormalByName(instructionTable, sizeof(instructionTable)/sizeof(instructionTable[0]), tokens.data[i-1].value) == STORE && val < totalBinarySize) {
+                int val = atoi(tokens->data[i].value);
+                if (i > 0 && tokens->data[i-1].type == TOKEN_KEYWORD) {
+                    if (getOpNormalByName(instructionTable, sizeof(instructionTable)/sizeof(instructionTable[0]), tokens->data[i-1].value) == STORE && val < totalBinarySize) {
                         showError(WARNING_ERROR, "address %d is reserved (program code area)", val);
                     }
                 }
-                logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Immediate Value %d (Hex: 0x%08X)", ftell(file), val, val);
+                logVerbose(ctx, "magenta", "GENERATE", "0x%04lX: Immediate Value %d (Hex: 0x%08X)", ftell(file), val, val);
                 fwrite(&val, 4, 1, file);
                 break;
             }
 
             case TOKEN_STRING: {
-                char *str = tokens.data[i].value;
-                logVerbose(cfg, "magenta", "GENERATE", "Writing string '%s' at 0x%04lX", str, ftell(file));
+                char *str = tokens->data[i].value;
+                logVerbose(ctx, "magenta", "GENERATE", "Writing string '%s' at 0x%04lX", str, ftell(file));
                 int len = strlen(str);
                 
                 for (int j = 0; j < len; j++) {
@@ -259,7 +260,7 @@ int generate(TokenArray tokens, Config cfg) {
             case TOKEN_LABEL_REF: {
                 int found = -1;
                 for (int j = 0; j < labelCount; j++) {
-                    if (strcmp(tokens.data[i].value, labelTable[j].name) == 0) {
+                    if (strcmp(tokens->data[i].value, labelTable[j].name) == 0) {
                         found = labelTable[j].address;
                         break;
                     }
@@ -267,12 +268,13 @@ int generate(TokenArray tokens, Config cfg) {
 
                 if (found != -1) {
                     int addr = found;
-                    logVerbose(cfg, "magenta", "GENERATE", "0x%04lX: Label Reference '%s' -> 0x%08X", ftell(file), tokens.data[i].value, found);
+                    logVerbose(ctx, "magenta", "GENERATE", "0x%04lX: Label Reference '%s' -> 0x%08X", ftell(file), tokens->data[i].value, found);
                     fwrite(&addr, 4, 1, file);
                 } else {
                     showError(FATAL_ERROR, "%d.%d: undefined label: '%s'",
-                        tokens.data[i].ln, tokens.data[i].col,
-                        tokens.data[i].value);
+                        tokens->data[i].ln, tokens->data[i].col,
+                        tokens->data[i].value);
+                        
                     fclose(file);
                     return 1;
                 }

@@ -39,7 +39,7 @@ const char *KEYWORDS[] = {
 
 size_t KEYWORDSCOUNT = sizeof(KEYWORDS) / sizeof(KEYWORDS[0]);
 
-void tokenize(const char *code, TokenArray *tokens, Config cfg) {
+void tokenize(const char *code, TokenArray *tokens, ArgCtx *ctx) {
     int idx = 0;
     int ln = 1;
     int col = 1;
@@ -59,7 +59,7 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
         }
         
         if (code[idx] == ';') {
-            logVerbose(cfg, "green", "LEXER", "Skipping comment line");
+            logVerbose(ctx, "green", "LEXER", "Skipping comment line");
 
             while (code[idx] != '\n' && code[idx] != '\0')
                 idx++;
@@ -88,7 +88,7 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
             
-            logVerbose(cfg, "green", "LEXER", "Reading directive: '%s'", dir);
+            logVerbose(ctx, "green", "LEXER", "Reading directive: '%s'", dir);
             continue;
         }
 
@@ -120,7 +120,7 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
 
-            logVerbose(cfg, "green", "LEXER", "Reading word: '%s'", word);
+            logVerbose(ctx, "green", "LEXER", "Reading word: '%s'", word);
 
             continue;
         }
@@ -141,7 +141,7 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
 
-            logVerbose(cfg, "green", "LEXER", "Reading number: '%s'", number);
+            logVerbose(ctx, "green", "LEXER", "Reading number: '%s'", number);
             
             continue;
         }
@@ -190,7 +190,7 @@ void tokenize(const char *code, TokenArray *tokens, Config cfg) {
             tokens->data[tokens->size-1].ln = ln;
             tokens->data[tokens->size-1].col = startCol;
 
-            logVerbose(cfg, "green", "LEXER", "Reading string: '%s'", str);
+            logVerbose(ctx, "green", "LEXER", "Reading string: '%s'", str);
             
             continue;
         }

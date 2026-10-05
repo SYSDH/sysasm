@@ -4,30 +4,28 @@
 #include "args/args.h"
 #include "utils.h"
 
+#define X(short, long, desc, argType, handler) {short, long, desc, argType, handler},
 ArgOption options[] = {
-    {"o", "output", "Set output name", ARG_REQ, handleOutput},
-    {"h", "help", "Show this message", ARG_OPT, handleHelp},
-
-    {NULL, "search-entry", "Skip Search entry point from code", ARG_NONE, handleEntryPoint},
-    {"V", "verbose", "Run code in verbose mode, sampling the compilation phase", ARG_NONE, handleVerbose},
+    ARGS_TABLE
 };
+#undef X
 
 const int optCount = sizeof(options) / sizeof(options[0]);
 
-int parseArgs(int argc, char **argv, void *context, char **targetPos) {
+int parseArgv(int argc, char **argv, ArgCtx *ctx) {
     for (int i = 1; i < argc; i++) {
         char *current = argv[i];
 
         if (current[0] != '-' || current[1] == '\0') {
-
-            if (targetPos != NULL) {
-                *targetPos = current;
+            if (ctx->pos == NULL) {
+                ctx->pos = current;
             }
+
             continue;
         }
 
         int isLong = (current[1] == '-');
-        int found = 0;
+        int found  = 0;
 
         for (int j = 0; j < optCount; j++) {
             const char *target = isLong ? options[j].longOpt : options[j].shortOpt;
@@ -36,22 +34,21 @@ int parseArgs(int argc, char **argv, void *context, char **targetPos) {
                 char *val = NULL;
 
                 if (options[j].hasVal == ARG_REQ) {
-
                     if (i + 1 < argc) {
                         val = argv[++i];
                     } else {
                         showError(FATAL_ERROR, "the option %s need a value.", current);
                         return 1;
                     }
-                }
-                else if (options[j].hasVal == ARG_OPT) {
+                } else if (options[j].hasVal == ARG_OPT) {
                     if (i + 1 < argc && argv[i + 1][0] != '-') {
                         val = argv[++i];
                     }
                 }
 
-                options[j].handler(val, context);
+                options[j].handler(val, ctx);
                 found = 1;
+
                 break;
             }
         }
@@ -61,5 +58,6 @@ int parseArgs(int argc, char **argv, void *context, char **targetPos) {
             return 1;
         }
     }
+
     return 0;
 }

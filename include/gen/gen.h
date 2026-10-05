@@ -35,9 +35,7 @@ typedef enum {
     // Ram
     LOAD        = 0x60, LOAD_REG    = 0x61,
     STORE       = 0x62, STORE_REG   = 0x63,
-
 } Opcode;
-
 
 // Maps
 typedef struct {
@@ -54,10 +52,9 @@ typedef struct {
 extern const InstructionMap instructionTable[];
 extern const RegisterMap registerTable[];
 
-
 typedef struct {
     char name[256];
     int address;
 } LabelSymbol;
 
-int generate(TokenArray tokens, Config cfg);
+int gen(TokenArray *tokens, ArgCtx *ctx);

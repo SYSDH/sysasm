@@ -7,11 +7,11 @@
 #include "args/args.h"
 #include "utils.h"
 
-void handleHelp(const char *val, void *context) {
+void handleHelp(const char *val, ArgCtx *ctx) {
     #define BRIGHT "\x1b[1m"
     #define RESET "\x1b[0m"
 
-    (void)context;
+    (void)ctx;
 
     if (val) {
         char cpyval[256];

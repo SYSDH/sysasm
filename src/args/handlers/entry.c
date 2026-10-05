@@ -1,8 +1,7 @@
 #include "args/args.h"
 
-void handleEntryPoint(const char *val, void *context) {
+void handleEntryPoint(const char *val, ArgCtx *ctx) {
     (void)val;
     
-    Config *cfg = (Config *)context;
-    cfg->searchEntryPoint = 0;
+    ctx->searchEntryPoint = 0;
 }

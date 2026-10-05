@@ -32,5 +32,5 @@ typedef struct {
     int capacity;
 } TokenArray;
 
-void tokenize(const char *code, TokenArray *tokens, Config cfg);
+void tokenize(const char *code, TokenArray *tokens, ArgCtx *ctx);
 void addTok(TokenArray *tokens, TokenType type, const char *value);

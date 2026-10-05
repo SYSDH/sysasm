@@ -31,8 +31,8 @@ void setColor(const char *colorName) {
     printf("\033[0m");
 }
 
-void logVerbose(Config cfg, const char *color, const char *step, const char *fmt, ...) {
-    if (!cfg.verbose) return;
+void logVerbose(ArgCtx *ctx, const char *color, const char *step, const char *fmt, ...) {
+    if (!ctx->verbose) return;
 
     va_list args;
     va_start(args, fmt);
