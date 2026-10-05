@@ -1,201 +1,68 @@
-#include <ctype.h>
-#include <stddef.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 #include "lexer/lexer.h"
-
-const char *KEYWORDS[] = {
-    "exit",
-    "mov",
-    "add",
-    "sub",
-    "jz",
-    "jnz",
-    "jg",
-    "jl",
-    "jle",
-    "jge",
-    "jmp",
-    "call",
-    "ret",
-    "out",
-    "in",
-    "load",
-    "store",
-    "push",
-    "pop",
-    "loadf",
-    "db",
-
-    "h",
-    "he",
-    "li",
-    "be",
-    "b",
-    "c",
-    "n",
-    "o"
-};
-
-size_t KEYWORDSCOUNT = sizeof(KEYWORDS) / sizeof(KEYWORDS[0]);
+#include "args/args.h"
+#include "utils.h"
 
 void tokenize(const char *code, TokenArray *tokens, ArgCtx *ctx) {
-    int idx = 0;
-    int ln = 1;
-    int col = 1;
+    if (!code) return;
 
-    while (code[idx] != '\0') {
-        if (code[idx] == '\n') {
-            ln++;
-            col = 1;
-            idx++;
-            continue;
-        }
+    Lexer lexer = {.code = code, .idx = 0, .tokens = tokens, .line = 1, .col = 1};
 
-        if (isspace(code[idx])) {
-            idx++;
-            col++;
-            continue;
-        }
-        
-        if (code[idx] == ';') {
-            logVerbose(ctx, "green", "LEXER", "Skipping comment line");
+    while (code[lexer.idx] != '\0') {
+        if (code[lexer.idx] == '.') {
+            size_t cap     = 256;
+            size_t dirIdx  = 0;
+            char *dir      = malloc(cap);
 
-            while (code[idx] != '\n' && code[idx] != '\0')
-                idx++;
-            continue;
-        }
+            int startLine = lexer.line;
+            int startCol  = lexer.col;
 
-        if (code[idx] == '$') {
-            addTok(tokens, TOKEN_POINTER, "$");
-            idx++;
-            col++;
-            continue;
-        }
+            while (code[lexer.idx] != '\0' && !isspace(code[lexer.idx])) {
+                if (dirIdx >= cap) {
+                    size_t newCap = cap * 2;
 
-        if (code[idx] == '.') {
-            char dir[256];
-            int dIdx = 0;
-            int startCol = col;
-            
-            while (code[idx] != '\0' && !isspace(code[idx])) {
-                dir[dIdx++] = code[idx++];
-                col++;
-            }
-            dir[dIdx] = '\0';
-            
-            addTok(tokens, TOKEN_DIRECTIVE, dir);
-            tokens->data[tokens->size-1].ln = ln;
-            tokens->data[tokens->size-1].col = startCol;
-            
-            logVerbose(ctx, "green", "LEXER", "Reading directive: '%s'", dir);
-            continue;
-        }
+                    char *temp = realloc(dir, newCap);
 
-        if (isalpha(code[idx]) || code[idx] == '_') {
-            char word[256];
-            int wordIdx = 0;
-            int startCol = col;
-
-            while (isalnum(code[idx]) || code[idx] == '_') {
-                word[wordIdx++] = code[idx++];
-                col++;
-            }
-
-            word[wordIdx] = '\0';
-
-            if (code[idx] == ':') {
-                addTok(tokens, TOKEN_LABEL_DEF, word);
-                idx++;
-                col++;
-            }
-            else if (contains(KEYWORDS, KEYWORDSCOUNT, word)) {
-                addTok(tokens, TOKEN_KEYWORD, word);
-            }
-            else {
-                addTok(tokens, TOKEN_LABEL_REF, word);
-                
-            }
-            
-            tokens->data[tokens->size-1].ln = ln;
-            tokens->data[tokens->size-1].col = startCol;
-
-            logVerbose(ctx, "green", "LEXER", "Reading word: '%s'", word);
-
-            continue;
-        }
-
-        if (isdigit(code[idx])) {
-            char number[256];
-            int numIdx = 0;
-            int startCol = col;
-
-            while (isdigit(code[idx])) {
-                number[numIdx++] = code[idx++];
-            }
-
-            number[numIdx] = '\0';
-
-            addTok(tokens, TOKEN_NUMBER, number);
-
-            tokens->data[tokens->size-1].ln = ln;
-            tokens->data[tokens->size-1].col = startCol;
-
-            logVerbose(ctx, "green", "LEXER", "Reading number: '%s'", number);
-            
-            continue;
-        }
-
-
-        if (code[idx] == '"') {
-            char str[2056] = {0};
-            int stringIdx = 0;
-            int startCol = col;
-
-            idx++;
-            col++;
-
-            while (code[idx] != '"' && code[idx] != '\0') {
-                if (code[idx] == '\\') {
-                    idx++;
-                    col++;
-
-                    if (code[idx] == '\0') break;
-
-                    switch (code[idx]) {
-                        case 'n': str[stringIdx++] = '\n'; break;
-                        case 't': str[stringIdx++] = '\t'; break;
-                        case 'r': str[stringIdx++] = '\r'; break;
-                        case '0': str[stringIdx++] = '\0'; break;
-                        case '\\': str[stringIdx++] = '\\'; break;
-                        case '"': str[stringIdx++] = '"'; break;
-                        default:   
-                            str[stringIdx++] = code[idx]; 
-                            break;
+                    if (!temp) {
+                        return;
                     }
 
-                    idx++;
-                    col++;
-                }
-                else {
-                    str[stringIdx++] = code[idx++];
-                    col++;
-                }
+                    dir = temp;
+                    cap  = newCap;
+                };
+
+                dir[dirIdx++] = advance_lexer(&lexer);
             }
 
-            if (code[idx] == '"') {idx++; col++;}
+            dir[dirIdx] = '\0';
 
-            addTok(tokens, TOKEN_STRING, str);
+            addTok(&lexer, TOKEN_DIRECTIVE, dir, dirIdx, startLine, startCol);
+            logVerbose(ctx, "green", "LEXER", "Reading directive: '%s'", dir);
 
-            tokens->data[tokens->size-1].ln = ln;
-            tokens->data[tokens->size-1].col = startCol;
-
-            logVerbose(ctx, "green", "LEXER", "Reading string: '%s'", str);
-            
             continue;
         }
 
-        idx++;
-        col++;
+        if (skipTrash(&lexer, ";")) continue;
+
+        #define X(handler, ...) \
+            if (handler(&lexer)) continue;
+
+        TOKENIZE_HELP_TABLE
+        
+        #undef X
+
+  
+        if (code[lexer.idx] != '\0') {
+            int l = lexer.line;
+            int c = lexer.col;
+
+            char current = advance_lexer(&lexer);
+            
+            // addTok uses memcpy, so it is safe to use tostring here.
+            addTok(&lexer, TOKEN_UNDEFINED, tostring(current), 1, l, c); 
+        }
     }
 }

@@ -41,11 +41,11 @@ Built to replace the "peasant way" of hardcoding hexadecimal bytes, SYSASM featu
 | **jnz**   |   2  | `jnz r, address`     | Jump to address if register is not zero              | 0x31 |
 | **jmp**   |   1  | `jmp address`        | Unconditional jump to an address                     | 0x32 |
 | **out**   |   2  | `out r, mode`        | Output register (mode: 0=number, 1=char)             | 0x40 |
-| **in**    |   1  | `in r`               | Read input from stdin into a register                | 0x42 |
-| **push**  |   1  | `push r`             | Push a value or register onto the stack              | 0x50 |
+| **push**  |   1  | `push r`             | Push a value or register into the stack              | 0x50 |
 | **pop**   |   1  | `pop r`              | Pop value from the stack into a register             | 0x52 |
 | **load**  |   2  | `load $r, r2`        | Load value from memory (pointer) into register       | 0x60 |
 | **store** |   2  | `store $r, r2`       | Store register value into memory (pointer)           | 0x62 |
+| **in**    |   0  | `in`                 | Read input from stdin into the stack                 | 0x42 |
 | **exit**  |   0  | `exit`               | Terminate the program                                | 0xFF |
 
 *Note: Use `$` before a register to indicate it should be treated as a memory pointer.*

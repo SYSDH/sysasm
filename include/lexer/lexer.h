@@ -1,36 +1,16 @@
 #pragma once
 
-#include "utils.h"
-#include "args/args.h"
+#include <stddef.h>
+#include <stdint.h>
 
-extern const char *KEYWORDS[];
-extern size_t KEYWORDSCOUNT;
+#include "structs.h"
+#include "functions.h"
+#include "tokenize.h"
 
-typedef enum {
-    TOKEN_KEYWORD,
-    TOKEN_NUMBER,
+#include "kind.h"
 
-    TOKEN_LABEL_REF,
-    TOKEN_LABEL_DEF,
+#define INIT_TOKENS(identifier)                                    \
+    TokenArray tokens = {.size = 0, .capacity = 10, .data = NULL}; \
+    tokens.data = malloc(tokens.capacity * sizeof *tokens.data);
 
-    TOKEN_POINTER,
-    TOKEN_DIRECTIVE,
-    TOKEN_STRING
-} TokenType;
 
-typedef struct {
-    TokenType type;
-    char value[2056];
-
-    int ln;
-    int col;
-} Token;
-
-typedef struct {
-    Token *data;
-    int size;
-    int capacity;
-} TokenArray;
-
-void tokenize(const char *code, TokenArray *tokens, ArgCtx *ctx);
-void addTok(TokenArray *tokens, TokenType type, const char *value);

@@ -3,8 +3,10 @@
 #include <stdio.h>
 
 #include "lexer/lexer.h"
+#include "utils.h"
 
-void addTok(TokenArray *tokens, TokenType type, const char *value) {
+void addTok(Lexer *lexer, TokenKind kind, const char *value, int len, int line, int col) {
+    TokenArray *tokens = lexer->tokens;
 
     if (tokens->size >= tokens->capacity) {
         tokens->capacity *= 2;
@@ -17,10 +19,18 @@ void addTok(TokenArray *tokens, TokenType type, const char *value) {
         }
     }
 
-    tokens->data[tokens->size].type = type;
-    snprintf(tokens->data[tokens->size].value,
-             sizeof(tokens->data[tokens->size].value),
-             "%s", value);
+    Token *tok  = &tokens->data[tokens->size];
 
+    tok->kind   = kind;
+    tok->line   = line;
+    tok->col    = col;
+    
+    tok->value  = malloc(len + 1);
+
+    if (tok->value) {
+        memcpy(tok->value, value, len);
+        tok->value[len] = '\0';
+    }
+    
     tokens->size++;
 }

@@ -66,20 +66,20 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
     
     char entryPointLabel[256] = "_main";
 
-    for (int i = 0; i < tokens->size; i++) {
-        if (tokens->data[i].type == TOKEN_DIRECTIVE) {
+    for (size_t i = 0; i < tokens->size; i++) {
+        if (tokens->data[i].kind == TOKEN_DIRECTIVE) {
             if (!strcmp(tokens->data[i].value, ".entry")) {
                 if (i + 1 < tokens->size) {
                     strncpy(entryPointLabel, tokens->data[i+1].value, 255);
                     i++; 
                 } 
             } else if (!strcmp(tokens->data[i].value, ".org")) {
-                if (i + 1 < tokens->size && tokens->data[i+1].type == TOKEN_NUMBER) {
+                if (i + 1 < tokens->size && tokens->data[i+1].kind == TOKEN_NUMBER) {
                     int newAddr = atoi(tokens->data[i+1].value);
 
                     if (newAddr < currentAddress) {
                         showError(FATAL_ERROR, "%d.%d: .org directive cannot go backwards in memory (from %d to %d)", 
-                            tokens->data[i].ln, tokens->data[i].col, currentAddress, newAddr
+                            tokens->data[i].line, tokens->data[i].col, currentAddress, newAddr
                         );
                         return 1;
                     }
@@ -95,7 +95,7 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
                     i++;
                 } else {
                     showError(FATAL_ERROR, "%d.%d: .org directive requires a number argument",
-                        tokens->data[i].ln, tokens->data[i].col
+                        tokens->data[i].line, tokens->data[i].col
                     );
 
                     return 1;
@@ -105,10 +105,10 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
             continue;
         }
 
-        if (tokens->data[i].type == TOKEN_LABEL_DEF) {
+        if (tokens->data[i].kind == TOKEN_LABEL_DEF) {
             if (labelCount >= MAX_LABEL) {
                 showError(FATAL_ERROR, "%d.%d: max label limit reached (%d)",
-                    tokens->data[i].ln, tokens->data[i].col,
+                    tokens->data[i].line, tokens->data[i].col,
                     MAX_LABEL
                 );
 
@@ -125,15 +125,15 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
 
             continue;
         }
-        else if (tokens->data[i].type == TOKEN_POINTER) continue;
-        else if (tokens->data[i].type == TOKEN_NUMBER || tokens->data[i].type == TOKEN_LABEL_REF) {
+        else if (tokens->data[i].kind == TOKEN_POINTER || tokens->data[i].kind == TOKEN_COMMA) continue;
+        else if (tokens->data[i].kind == TOKEN_NUMBER || tokens->data[i].kind == TOKEN_LABEL_REF) {
             currentAddress += 4;
         }
-        else if (tokens->data[i].type == TOKEN_STRING) { 
+        else if (tokens->data[i].kind == TOKEN_STRING) { 
             int len = strlen(tokens->data[i].value) + 1;
             currentAddress += (len * 4); 
         }
-        else if (tokens->data[i].type == TOKEN_KEYWORD && !strcmp(tokens->data[i].value, "db")) {
+        else if (tokens->data[i].kind == TOKEN_KEYWORD && !strcmp(tokens->data[i].value, "db")) {
             continue;
         }
         else {
@@ -171,19 +171,20 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
         fwrite(&mainLabel, 4, 1, file);
     }
 
-    for (int i = 0; i < tokens->size; i++) {
-        if (tokens->data[i].type == TOKEN_DIRECTIVE) {
+    for (size_t i = 0; i < tokens->size; i++) {
+        if (tokens->data[i].kind == TOKEN_DIRECTIVE) {
             if (!strcmp(tokens->data[i].value, ".entry")) {
                 i++;
             }
             else if (!strcmp(tokens->data[i].value, ".org")) {
                 i++;
             }
+
             continue;
         }
 
-        switch (tokens->data[i].type) {
-            case TOKEN_POINTER: case TOKEN_LABEL_DEF: case TOKEN_DIRECTIVE:
+        switch (tokens->data[i].kind) {
+            case TOKEN_POINTER: case TOKEN_LABEL_DEF: case TOKEN_DIRECTIVE: case TOKEN_COMMA:
                 continue;
 
             case TOKEN_KEYWORD: {
@@ -210,15 +211,15 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
                 int useRegVersion = 0;
                 
                 if (strcmp(inst.name, "mov") == 0 || strcmp(inst.name, "add") == 0 || strcmp(inst.name, "sub") == 0) {
-                    int srcIdx = i + 2;
-                    if (srcIdx < tokens->size && tokens->data[srcIdx].type == TOKEN_POINTER) {
+                    size_t srcIdx = i + 2;
+                    if (srcIdx < tokens->size && tokens->data[srcIdx].kind == TOKEN_POINTER) {
                         srcIdx++;
                     }
                     if (srcIdx < tokens->size && getRegIdx(tokens->data[srcIdx].value) != -1) {
                         useRegVersion = 1;
                     }
                 } else {
-                    if (i + 1 < tokens->size && tokens->data[i+1].type == TOKEN_POINTER) {
+                    if (i + 1 < tokens->size && tokens->data[i+1].kind == TOKEN_POINTER) {
                         if (inst.opReg != 0xFF) {
                             useRegVersion = 1;
                         }
@@ -233,7 +234,7 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
 
             case TOKEN_NUMBER: {
                 int val = atoi(tokens->data[i].value);
-                if (i > 0 && tokens->data[i-1].type == TOKEN_KEYWORD) {
+                if (i > 0 && tokens->data[i-1].kind == TOKEN_KEYWORD) {
                     if (getOpNormalByName(instructionTable, sizeof(instructionTable)/sizeof(instructionTable[0]), tokens->data[i-1].value) == STORE && val < totalBinarySize) {
                         showError(WARNING_ERROR, "address %d is reserved (program code area)", val);
                     }
@@ -272,7 +273,7 @@ int gen(TokenArray *tokens, ArgCtx *ctx) {
                     fwrite(&addr, 4, 1, file);
                 } else {
                     showError(FATAL_ERROR, "%d.%d: undefined label: '%s'",
-                        tokens->data[i].ln, tokens->data[i].col,
+                        tokens->data[i].line, tokens->data[i].col,
                         tokens->data[i].value);
                         
                     fclose(file);

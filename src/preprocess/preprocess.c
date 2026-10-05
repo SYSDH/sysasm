@@ -60,7 +60,7 @@ static void expandArgs(const char *template, char **args, int argCount, char *de
     dest[dIdx] = '\0';
 }
 
-static char* applyMacro(const char *line, Config cfg) {
+static char* applyMacro(const char *line, ArgCtx *ctx) {
     size_t bufSize = 2048;
     char *result = malloc(bufSize);
     if (!result) return NULL;
@@ -159,7 +159,7 @@ static char* applyMacro(const char *line, Config cfg) {
                     char expanded[MAX_MACROVALUE];
                     expandArgs(macros[foundIdx].value, args, argCount, expanded, MAX_MACROVALUE);
 
-                    logVerbose(cfg, "magenta", "MACRO", "Expanded '%%%s' (%d args) -> '%s'", nameBuf, argCount, expanded);
+                    logVerbose(ctx, "magenta", "MACRO", "Expanded '%%%s' (%d args) -> '%s'", nameBuf, argCount, expanded);
 
                     char leadingWhitespaces[256] = {0};
                     int lw = 0;
@@ -212,8 +212,8 @@ static char* applyMacro(const char *line, Config cfg) {
     return result;
 }
 
-static char* processRecursive(const char *filename, Config cfg) {
-    logVerbose(cfg, "cyan", "PREPROCESS", "Preprocessing %s file", filename);
+static char* processRecursive(const char *filename, ArgCtx *ctx) {
+    logVerbose(ctx, "cyan", "PREPROCESS", "Preprocessing %s file", filename);
 
     char absolutePath[PATH_MAX];
 #ifdef _WIN32
@@ -226,7 +226,7 @@ static char* processRecursive(const char *filename, Config cfg) {
 
     for (int i = 0; i < includedCount; i++) {
         if (strcmp(includedFiles[i], absolutePath) == 0) {
-            logVerbose(cfg, "yellow", "INCLUDE", "Circular dependency detected for %s, skipping.", filename);
+            logVerbose(ctx, "yellow", "INCLUDE", "Circular dependency detected for %s, skipping.", filename);
             return strdup("");
         }
     }
@@ -267,7 +267,7 @@ static char* processRecursive(const char *filename, Config cfg) {
                 strncpy(includeName, startQuote + 1, nameLen);
                 includeName[nameLen] = '\0';
 
-                logVerbose(cfg, "yellow", "INCLUDE", "Found '#include \"%s\"'", includeName);
+                logVerbose(ctx, "yellow", "INCLUDE", "Found '#include \"%s\"'", includeName);
 
                 size_t pathLen = strlen(currentDir) + strlen(includeName) + 2;
                 char *fullIncludePath = malloc(pathLen);
@@ -279,7 +279,7 @@ static char* processRecursive(const char *filename, Config cfg) {
 
                 snprintf(fullIncludePath, pathLen, "%s/%s", currentDir, includeName);
 
-                char *includedContent = processRecursive(fullIncludePath, cfg);
+                char *includedContent = processRecursive(fullIncludePath, ctx);
                 
                 free(fullIncludePath);
                 if (includedContent) {
@@ -371,7 +371,7 @@ static char* processRecursive(const char *filename, Config cfg) {
                 strncpy(macros[macroCount].name, macroName, MAX_MACRONAME);
                 strncpy(macros[macroCount].value, macroVal, MAX_MACROVALUE);
 
-                logVerbose(cfg, "magenta", "MACRO", "Defined macro '%s' ->  '%s'", macroName, macroVal);
+                logVerbose(ctx, "magenta", "MACRO", "Defined macro '%s' ->  '%s'", macroName, macroVal);
                 macroCount++;
             }
             continue;
@@ -396,12 +396,12 @@ static char* processRecursive(const char *filename, Config cfg) {
             }
         }
         
-        char *processedLine = applyMacro(line, cfg);
+        char *processedLine = applyMacro(line, ctx);
         int depth = 0;
         
         while (depth < 20) {
 
-            char *nextPass = applyMacro(processedLine, cfg);
+            char *nextPass = applyMacro(processedLine, ctx);
             if (!nextPass) break;
             if (strcmp(nextPass, processedLine) == 0) {
                 free(nextPass);
@@ -435,16 +435,16 @@ static char* processRecursive(const char *filename, Config cfg) {
     return output;
 }
 
-char* preprocessFile(const char *filename, Config cfg) {
+char* preprocessFile(const char *filename, ArgCtx *ctx) {
     includedCount = 0;
     macroCount = 0;
 
     
-    logVerbose(cfg, "cyan", "PREPROCESS", "Starting preprocessing session...");
+    logVerbose(ctx, "cyan", "PREPROCESS", "Starting preprocessing session...");
     
-    char* result = processRecursive(filename, cfg);
+    char* result = processRecursive(filename, ctx);
 
-    logVerbose(cfg, "cyan", "PREPROCESS", "Preprocessing completed successfully.");
+    logVerbose(ctx, "cyan", "PREPROCESS", "Preprocessing completed successfully.");
 
     return result;
 }
